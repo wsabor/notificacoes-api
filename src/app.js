@@ -1,6 +1,8 @@
 // src/app.js
 const express = require("express");
 const app = express();
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
 
 // Middleware para ler JSON no body
 app.use(express.json());
@@ -14,6 +16,7 @@ const inscricaoRoutes = require("./routes/inscricaoRoutes");
 app.use("/eventos", eventoRoutes);
 app.use("/participantes", participanteRoutes);
 app.use("/inscricoes", inscricaoRoutes);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rota raiz (informativa)
 app.get("/", (req, res) => {
@@ -23,6 +26,7 @@ app.get("/", (req, res) => {
       eventos: "/eventos",
       participantes: "/participantes",
       inscricoes: "/inscricoes",
+      documentacao: "/api-docs",
     },
   });
 });
