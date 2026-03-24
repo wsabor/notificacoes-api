@@ -3,9 +3,13 @@ const express = require("express");
 const app = express();
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
+const logger = require("./middlewares/logger");
+const cors = require("cors");
 
-// Middleware para ler JSON no body
+// Middlewares
 app.use(express.json());
+app.use(logger);
+app.use(cors());
 
 // Importar rotas
 const eventoRoutes = require("./routes/eventoRoutes");
@@ -30,5 +34,9 @@ app.get("/", (req, res) => {
     },
   });
 });
+
+// Middleware de rota não encontrada (sempre por último!)
+const notFound = require("./middlewares/notFound");
+app.use(notFound);
 
 module.exports = app;
