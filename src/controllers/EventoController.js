@@ -1,71 +1,52 @@
 // src/controllers/EventoController.js
-const EventoModel = require("../models/EventoModel");
+const EventoService = require("../services/EventoService");
 
-// GET /eventos — listar todos
-function index(req, res) {
-    const eventos = EventoModel.listarTodos();
+function index(req, res, next) {
+  try {
+    const eventos = EventoService.listarTodos();
     res.json(eventos);
+  } catch (erro) {
+    next(erro);
+  }
 }
 
-// GET /eventos/:id — buscar por ID
-function show(req, res) {
+function show(req, res, next) {
+  try {
     const id = parseInt(req.params.id);
-    const evento = EventoModel.buscarPorId(id);
-
-    if (!evento) {
-        return res.status(404).json({ erro: "Evento não encontrado" });
-    }
-
+    const evento = EventoService.buscarPorId(id);
     res.json(evento);
+  } catch (erro) {
+    next(erro);
+  }
 }
 
-// POST /eventos — criar novo
-function store(req, res) {
-    const { nome, descricao, data, local, capacidade } = req.body;
-
-    // Validação simples
-    if (!nome || !data) {
-        return res.status(400).json({ erro: "Nome e data são obrigatórios" });
-    }
-
-    const novoEvento = EventoModel.criar({
-        nome,
-        descricao,
-        data,
-        local,
-        capacidade,
-    });
+function store(req, res, next) {
+  try {
+    const novoEvento = EventoService.criar(req.body);
     res.status(201).json(novoEvento);
+  } catch (erro) {
+    next(erro);
+  }
 }
 
-// PUT /eventos/:id — atualizar
-function update(req, res) {
+function update(req, res, next) {
+  try {
     const id = parseInt(req.params.id);
-    const eventoAtualizado = EventoModel.atualizar(id, req.body);
-
-    if (!eventoAtualizado) {
-        return res.status(404).json({ erro: "Evento não encontrado" });
-    }
-
+    const eventoAtualizado = EventoService.atualizar(id, req.body);
     res.json(eventoAtualizado);
+  } catch (erro) {
+    next(erro);
+  }
 }
 
-// DELETE /eventos/:id — deletar
-function destroy(req, res) {
+function destroy(req, res, next) {
+  try {
     const id = parseInt(req.params.id);
-    const deletado = EventoModel.deletar(id);
-
-    if (!deletado) {
-        return res.status(404).json({ erro: "Evento não encontrado" });
-    }
-
+    EventoService.deletar(id);
     res.status(204).send();
+  } catch (erro) {
+    next(erro);
+  }
 }
 
-module.exports = {
-    index,
-    show,
-    store,
-    update,
-    destroy,
-};
+module.exports = { index, show, store, update, destroy };
