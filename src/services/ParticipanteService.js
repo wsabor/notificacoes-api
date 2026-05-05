@@ -1,19 +1,18 @@
 // src/services/ParticipanteService.js
-const ParticipanteModel = require("../models/ParticipanteModel");
-const { NotFoundError, ValidationError } = require("../errors/AppError");
-const {
-  isRequired,
-  isEmail,
-  minLength,
-  validar,
-} = require("../helpers/validators");
+const { Participante } = require("../models");
+const { NotFoundError } = require("../errors/AppError");
 
-function listarTodos() {
-  return ParticipanteModel.listarTodos();
+async function listarTodos() {
+  // Use Participante.findAll() com ordenação por nome
+  // _________________________________
+  const participantes = await Participante.findAll({
+    order: [["nome", "ASC"]],
+  });
+  return participantes;
 }
 
-function buscarPorId(id) {
-  const participante = ParticipanteModel.buscarPorId(id);
+async function buscarPorId(id) {
+  const participante = await Participante.findByPk(id);
 
   if (!participante) {
     throw new NotFoundError("Participante");
@@ -22,53 +21,22 @@ function buscarPorId(id) {
   return participante;
 }
 
-function criar(dados) {
-  const { nome, email } = dados;
-
-  const erros = validar([
-    isRequired(nome, "Nome"),
-    minLength(nome, 2, "Nome"),
-    isRequired(email, "Email"),
-    isEmail(email),
-  ]);
-
-  if (erros) {
-    throw new ValidationError(erros.join("; "));
+async function criar(dados) {
+  // Use Participante.create(dados) com try/catch para erros do Sequelize
+  try {
+    const novoParticipante = await Participante.create(dados);
+    return novoParticipante;
+  } catch (erro) {
+    throw erro;
   }
-
-  return ParticipanteModel.criar({ nome, email });
 }
 
-function atualizar(id, dados) {
-  const { nome, email } = dados;
-
-  // No update, campos são opcionais — mas se enviados devem ser válidos
-  const erros = validar([
-    minLength(nome, 2, "Nome"),
-    isEmail(email),
-  ]);
-
-  if (erros) {
-    throw new ValidationError(erros.join("; "));
-  }
-
-  const participanteAtualizado = ParticipanteModel.atualizar(id, dados);
-
-  if (!participanteAtualizado) {
-    throw new NotFoundError("Participante");
-  }
-
-  return participanteAtualizado;
+async function atualizar(id, dados) {
+  // TODO: próxima aula
 }
 
-function deletar(id) {
-  const deletado = ParticipanteModel.deletar(id);
-
-  if (!deletado) {
-    throw new NotFoundError("Participante");
-  }
-
-  return true;
+async function deletar(id) {
+  // TODO: próxima aula
 }
 
 module.exports = { listarTodos, buscarPorId, criar, atualizar, deletar };
