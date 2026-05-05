@@ -99,4 +99,84 @@ router.get("/inscricoes/xml", async (req, res, next) => {
   }
 });
 
+// GET /exportar/relatorio/inscricoes — relatório de inscrições por evento
+router.get("/relatorio/inscricoes", async (req, res, next) => {
+  try {
+    const eventos = await Evento.findAll({
+      include: [
+        {
+          model: Inscricao,
+          as: "inscricoes",
+          include: [
+            {
+              model: Participante,
+              as: "participante",
+              attributes: ["nome", "email"],
+            },
+          ],
+        },
+      ],
+      order: [["data", "ASC"]],
+    });
+
+    // Formatar o relatório
+    const relatorio = eventos.map((evento) => ({
+      evento: evento.nome,
+      data: evento.data,
+      capacidade: evento.capacidade,
+      totalInscritos: evento.inscricoes.length,
+      vagasRestantes: (evento.capacidade || 0) - evento.inscricoes.length,
+      inscritos: evento.inscricoes.map((i) => ({
+        nome: i.participante.nome,
+        email: i.participante.email,
+        status: i.status,
+        dataInscricao: i.dataInscricao,
+      })),
+    }));
+
+    res.json({
+      geradoEm: new Date().toISOString(),
+      totalEventos: relatorio.length,
+      relatorio,
+    });
+  } catch (erro) {
+    next(erro);
+  }
+});
+
+// GET /exportar/relatorio/inscricoes/csv
+router.get("/relatorio/inscricoes/csv", async (req, res, next) => {
+  try {
+    const inscricoes = await Inscricao.findAll({
+      include: [
+        { model: Evento, as: "evento", attributes: ["nome", "data"] },
+        {
+          model: Participante,
+          as: "participante",
+          attributes: ["nome", "email"],
+        },
+      ],
+      raw: true,
+      nest: true,
+    });
+
+    // Montar o cabeçalho do CSV
+    let csv =
+      "ID,Evento,Data Evento,Participante,Email,Status,Data Inscricao\n";
+
+    // Montar as linhas
+    inscricoes.forEach((i) => {
+      // Complete: monte cada linha do CSV separando por vírgula
+      // Dica: use template literals e acesse i.evento.nome, i.participante.email, etc.
+      csv += `${i.id},"${i.evento.nome}",${i.evento.data.toISOString()},"${i.participante.nome}",${i.participante.email},${i.status},${i.createdAt.toISOString()}\n`;
+    });
+
+    res.set("Content-Type", "text/csv");
+    res.set("Content-Disposition", 'attachment; filename="inscricoes.csv"');
+    res.send(csv);
+  } catch (erro) {
+    next(erro);
+  }
+});
+
 module.exports = router;

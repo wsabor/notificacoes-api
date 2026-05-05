@@ -37,6 +37,10 @@ const Evento = sequelize.define(
         min: { args: [1], msg: "Capacidade deve ser pelo menos 1" },
       },
     },
+    banner: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     tableName: "eventos",
