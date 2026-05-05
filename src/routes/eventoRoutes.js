@@ -60,6 +60,24 @@ router.get("/", EventoController.index);
 
 /**
  * @swagger
+ * /eventos/futuros:
+ *   get:
+ *     summary: Listar eventos futuros
+ *     tags: [Eventos]
+ *     responses:
+ *       200:
+ *         description: Lista de eventos futuros
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Evento'
+ */
+router.get("/futuros", EventoController.listarFuturos);
+
+/**
+ * @swagger
  * /eventos/{id}:
  *   get:
  *     summary: Buscar evento por ID
