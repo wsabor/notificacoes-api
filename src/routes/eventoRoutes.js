@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const EventoController = require("../controllers/EventoController");
 const upload = require("../config/upload");
+const cacheMiddleware = require("../middlewares/cacheMiddleware");
 
 /**
  * @swagger
@@ -57,7 +58,7 @@ const upload = require("../config/upload");
  *               items:
  *                 $ref: '#/components/schemas/Evento'
  */
-router.get("/", EventoController.index);
+router.get("/", cacheMiddleware(30), EventoController.index);
 
 /**
  * @swagger
@@ -75,7 +76,7 @@ router.get("/", EventoController.index);
  *               items:
  *                 $ref: '#/components/schemas/Evento'
  */
-router.get("/futuros", EventoController.listarFuturos);
+router.get("/futuros", cacheMiddleware(30), EventoController.listarFuturos);
 
 /**
  * @swagger
@@ -100,7 +101,7 @@ router.get("/futuros", EventoController.listarFuturos);
  *       404:
  *         description: Evento não encontrado
  */
-router.get("/:id", EventoController.show);
+router.get("/:id", cacheMiddleware(30), EventoController.show);
 
 /**
  * @swagger

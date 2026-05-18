@@ -64,8 +64,8 @@ router.get("/inscricoes/xml", async (req, res, next) => {
   try {
     const inscricoes = await Inscricao.findAll({
       include: [
-        { model: Evento, attributes: ["id", "nome"] },
-        { model: Participante, attributes: ["id", "nome"] },
+        { model: Evento, as: "evento", attributes: ["id", "nome"] },
+        { model: Participante, as: "participante", attributes: ["id", "nome"] },
       ],
       order: [["createdAt", "ASC"]],
     });
@@ -79,10 +79,10 @@ router.get("/inscricoes/xml", async (req, res, next) => {
         .txt(String(inscricao.id))
         .up()
         .ele("evento")
-        .txt(inscricao.Evento.nome)
+        .txt(inscricao.evento.nome)
         .up()
         .ele("participante")
-        .txt(inscricao.Participante.nome)
+        .txt(inscricao.participante.nome)
         .up()
         .ele("dataInscricao")
         .txt(inscricao.createdAt.toISOString())
