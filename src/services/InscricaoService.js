@@ -1,6 +1,7 @@
 // src/services/InscricaoService.js
 const { Inscricao, Evento, Participante } = require("../models");
 const { NotFoundError, ValidationError } = require("../errors/AppError");
+const appEmitter = require("../events/eventEmitter");
 
 async function criar(dados) {
   const { eventoId, participanteId } = dados;
@@ -25,6 +26,9 @@ async function criar(dados) {
     evento_id: eventoId,
     participante_id: participanteId,
   });
+
+  // Emitir evento — os observers serão notificados
+  appEmitter.emit("inscricao:criada", novaInscricao);
 
   return novaInscricao;
 }
@@ -73,6 +77,10 @@ async function cancelar(id) {
   if (!inscricao) throw new NotFoundError("Inscrição");
 
   await inscricao.update({ status: "cancelada" });
+
+  // Emitir evento de cancelamento
+  appEmitter.emit("inscricao:cancelada", inscricao);
+
   return inscricao;
 }
 
