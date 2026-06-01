@@ -17,13 +17,13 @@ const NotificacaoService = require("../services/NotificacaoService");
  *         tipo:
  *           type: string
  *           enum: [confirmacao, lembrete]
- *         destinatario_email:
+ *         destinatarioEmail:
  *           type: string
  *         assunto:
  *           type: string
  *         enviada:
  *           type: boolean
- *         data_envio:
+ *         dataEnvio:
  *           type: string
  *           format: date-time
  */
@@ -83,6 +83,32 @@ router.get("/estatisticas", async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /notificacoes/{id}:
+ *   get:
+ *     summary: Buscar notificação por ID
+ *     tags: [Notificações]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Notificação encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Notificacao'
+ *       404:
+ *         description: Notificação não encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Erro'
+ */
 // GET /notificacoes/:id — detalhes de uma notificação
 router.get("/:id", async (req, res, next) => {
   try {
@@ -128,6 +154,27 @@ router.post("/:id/reenviar", async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /notificacoes/teste-email:
+ *   post:
+ *     summary: Enviar e-mail de teste
+ *     tags: [Notificações]
+ *     responses:
+ *       200:
+ *         description: E-mail de teste enviado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensagem:
+ *                   type: string
+ *                   example: E-mail de teste enviado!
+ *                 visualizarEm:
+ *                   type: string
+ *                   example: http://192.168.1.200:8025
+ */
 // POST /notificacoes/teste-email — enviar e-mail de teste
 router.post("/teste-email", async (req, res, next) => {
   try {
