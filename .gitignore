@@ -3,3 +3,5 @@ node_modules/
 .DS_Store
 src/config/database.json
 uploads/
+api-alunos/
+aulas/
