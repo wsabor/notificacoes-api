@@ -40,6 +40,21 @@ const cacheMiddleware = require("../middlewares/cacheMiddleware");
  *         data: "2025-08-15"
  *         local: SENAI - Sala 3
  *         capacidade: 30
+ *     Erro:
+ *       type: object
+ *       properties:
+ *         erro:
+ *           type: object
+ *           properties:
+ *             tipo:
+ *               type: string
+ *               example: NotFoundError
+ *             mensagem:
+ *               type: string
+ *               example: Evento não encontrado(a)
+ *             statusCode:
+ *               type: integer
+ *               example: 404
  */
 
 /**
@@ -100,6 +115,10 @@ router.get("/futuros", cacheMiddleware(30), EventoController.listarFuturos);
  *               $ref: '#/components/schemas/Evento'
  *       404:
  *         description: Evento não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Erro'
  */
 router.get("/:id", cacheMiddleware(30), EventoController.show);
 
@@ -138,11 +157,69 @@ router.get("/:id", cacheMiddleware(30), EventoController.show);
  *     responses:
  *       201:
  *         description: Evento criado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Evento'
  *       400:
  *         description: Dados inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Erro'
  */
 router.post("/", EventoController.store);
 
+/**
+ * @swagger
+ * /eventos/{id}/banner:
+ *   post:
+ *     summary: Fazer upload do banner do evento
+ *     tags: [Eventos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               banner:
+ *                 type: string
+ *                 format: binary
+ *                 description: Imagem do banner (JPEG, PNG, GIF, WebP — máx 5MB)
+ *     responses:
+ *       200:
+ *         description: Banner atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mensagem:
+ *                   type: string
+ *                   example: Banner atualizado com sucesso
+ *                 banner:
+ *                   type: string
+ *                   example: /uploads/banner-1.jpg
+ *       400:
+ *         description: Nenhum arquivo enviado ou tipo inválido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Erro'
+ *       404:
+ *         description: Evento não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Erro'
+ */
 // POST /eventos/:id/banner — enviar imagem do banner
 router.post("/:id/banner", upload.single("banner"), async (req, res, next) => {
   try {
@@ -201,8 +278,22 @@ router.post("/:id/banner", upload.single("banner"), async (req, res, next) => {
  *     responses:
  *       200:
  *         description: Evento atualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Evento'
+ *       400:
+ *         description: Dados inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Erro'
  *       404:
  *         description: Evento não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Erro'
  */
 router.put("/:id", EventoController.update);
 
@@ -223,6 +314,10 @@ router.put("/:id", EventoController.update);
  *         description: Evento deletado
  *       404:
  *         description: Evento não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Erro'
  */
 router.delete("/:id", EventoController.destroy);
 

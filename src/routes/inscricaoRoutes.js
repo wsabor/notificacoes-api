@@ -24,12 +24,13 @@ const InscricaoController = require("../controllers/InscricaoController");
  *           description: ID do evento
  *         status:
  *           type: string
- *           description: Status da inscrição (ativa, cancelada)
+ *           enum: [confirmada, cancelada]
+ *           description: Status da inscrição
  *       example:
  *         id: 1
  *         participanteId: 1
  *         eventoId: 1
- *         status: ativa
+ *         status: confirmada
  */
 
 /**
@@ -83,16 +84,17 @@ router.get("/", InscricaoController.index);
  *             schema:
  *               $ref: '#/components/schemas/Inscricao'
  *       400:
- *         description: Dados inválidos (eventoId e participanteId são obrigatórios)
+ *         description: Participante já inscrito ou dados inválidos
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 erro:
- *                   type: string
- *               example:
- *                 erro: "eventoId e participanteId são obrigatórios"
+ *               $ref: '#/components/schemas/Erro'
+ *       404:
+ *         description: Evento ou participante não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Erro'
  */
 router.post("/", InscricaoController.store);
 
@@ -146,12 +148,7 @@ router.get("/evento/:eventoId", InscricaoController.listarPorEvento);
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 erro:
- *                   type: string
- *               example:
- *                 erro: "Inscrição não encontrada"
+ *               $ref: '#/components/schemas/Erro'
  */
 router.patch("/:id/cancelar", InscricaoController.cancelar);
 

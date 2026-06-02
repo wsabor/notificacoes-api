@@ -4,6 +4,20 @@ const router = express.Router();
 const { Evento, Participante, Inscricao } = require("../models");
 const { create } = require("xmlbuilder2");
 
+/**
+ * @swagger
+ * /exportar/eventos/xml:
+ *   get:
+ *     summary: Exportar eventos em XML
+ *     tags: [Exportação]
+ *     responses:
+ *       200:
+ *         description: Arquivo XML com todos os eventos
+ *         content:
+ *           application/xml:
+ *             schema:
+ *               type: string
+ */
 // GET /exportar/eventos/xml — exportar eventos em XML
 router.get("/eventos/xml", async (req, res, next) => {
   try {
@@ -44,6 +58,22 @@ router.get("/eventos/xml", async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /exportar/eventos/json:
+ *   get:
+ *     summary: Exportar eventos em JSON (download)
+ *     tags: [Exportação]
+ *     responses:
+ *       200:
+ *         description: Download do arquivo JSON com todos os eventos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Evento'
+ */
 // GET /exportar/eventos/json — exportar eventos em JSON (download)
 router.get("/eventos/json", async (req, res, next) => {
   try {
@@ -60,6 +90,20 @@ router.get("/eventos/json", async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /exportar/inscricoes/xml:
+ *   get:
+ *     summary: Exportar inscrições em XML
+ *     tags: [Exportação]
+ *     responses:
+ *       200:
+ *         description: Arquivo XML com todas as inscrições
+ *         content:
+ *           application/xml:
+ *             schema:
+ *               type: string
+ */
 router.get("/inscricoes/xml", async (req, res, next) => {
   try {
     const inscricoes = await Inscricao.findAll({
@@ -99,6 +143,28 @@ router.get("/inscricoes/xml", async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /exportar/relatorio/inscricoes:
+ *   get:
+ *     summary: Relatório de inscrições por evento
+ *     tags: [Exportação]
+ *     responses:
+ *       200:
+ *         description: Relatório JSON com inscritos, vagas e status por evento
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 geradoEm:
+ *                   type: string
+ *                   format: date-time
+ *                 totalEventos:
+ *                   type: integer
+ *                 relatorio:
+ *                   type: array
+ */
 // GET /exportar/relatorio/inscricoes — relatório de inscrições por evento
 router.get("/relatorio/inscricoes", async (req, res, next) => {
   try {
@@ -144,6 +210,20 @@ router.get("/relatorio/inscricoes", async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /exportar/relatorio/inscricoes/csv:
+ *   get:
+ *     summary: Exportar inscrições em CSV (download)
+ *     tags: [Exportação]
+ *     responses:
+ *       200:
+ *         description: Download do arquivo CSV com todas as inscrições
+ *         content:
+ *           text/csv:
+ *             schema:
+ *               type: string
+ */
 // GET /exportar/relatorio/inscricoes/csv
 router.get("/relatorio/inscricoes/csv", async (req, res, next) => {
   try {
