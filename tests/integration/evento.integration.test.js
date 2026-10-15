@@ -38,5 +38,14 @@ describe("EventoService.criar (integração)", () => {
   // Depois, apague o ".todo" da linha abaixo e troque por um teste completo:
   //   it("grava o evento no banco com o nome correto", async () => { ... });
   // ============================================================
-  it.todo("grava o evento no banco com o nome correto");
+    it("grava o evento no banco com o nome correto", async () => {
+
+    const dados = { nome: "Semana de Tecnologia", data: "2026-11-20" };
+    const criado = await EventoService.criar(dados);
+    const doBanco = await Evento.findByPk(criado.id);
+    
+    expect(doBanco).not.toBeNull();
+    expect(doBanco.nome).toBe(dados.nome);
+  });
+
 });
