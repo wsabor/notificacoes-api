@@ -70,26 +70,33 @@ npm run test:integration
 
 ✅ A saída termina com `Tests: ... passed`.
 
-### Passo 5 — Receber atualizações do professor (Sync fork)
+### Passo 5 — Receber atualizações do professor
 
-Quando o professor publicar arquivos novos:
+Quando o professor publicar arquivos novos, **não use o botão "Sync fork" do GitHub**: se ele oferecer **"Discard commits"**, o seu trabalho é apagado. No terminal, na pasta do projeto:
 
-1. No GitHub, abra **o seu fork** e clique em **Sync fork** → **Update branch**.
-2. No terminal:
+1. Salve o seu trabalho:
    ```bash
-   git pull
+   git add .
+   git commit -m "trabalho pendente"
+   ```
+2. Traga as novidades do professor (uma linha só):
+   ```bash
+   git pull https://github.com/wsabor/notificacoes-api.git main --no-rebase --no-edit -X ours
+   ```
+3. Se o professor acrescentou ferramentas novas, instale:
+   ```bash
+   npm install
    ```
 
-> Faça **commit e push** do seu trabalho **antes** do Sync fork. Se o `git pull` responder `Need to specify how to reconcile divergent branches`, use:
-> ```bash
-> git pull --no-rebase --no-edit
-> ```
+> O `-X ours` mantém a **sua** versão quando você e o professor mexeram no mesmo trecho de um arquivo. Os arquivos novos do professor chegam normalmente.
 
 ### Comandos de teste
 
 ```bash
 npm run test:unit         # Testes unitários (não usam banco)
 npm run test:integration  # Testes de integração (usam o banco de TESTE)
+npm run test:endpoint     # Testes de endpoint com Supertest (usam o banco de TESTE)
+npm test                  # Todos os testes, um arquivo de cada vez
 npm run test:cov          # Testes unitários + relatório de cobertura
 ```
 
@@ -103,11 +110,13 @@ npm run test:cov          # Testes unitários + relatório de cobertura
 | `Access denied for user 'root'` | Senha errada no `.env.test` |
 | `Dialect needs to be explicitly supplied` | Falta o `database.json` ou o bloco `"test"` (Passo 3.2) |
 | Todos os testes falham na linha do `limparBanco`, sem mensagem | Faltam as tabelas: `npx sequelize-cli db:migrate --env test` |
+| `Cannot find module 'supertest'` | Rode `npm install` (Passo 5.3) |
+| `Jest did not exit one second after the test run has completed` | Faltou `await` antes de um `request(app)`. Aperte `Ctrl+C`, corrija e rode de novo |
 
 ```
 tests/
 ├── setup.js         → Carrega o .env.test antes dos testes
-├── helpers/         → limparBanco (esvazia o banco de teste)
+├── helpers/         → limparBanco (esvazia o banco de teste) e obterToken (login para rotas protegidas)
 ├── unit/            → Testes unitários
 ├── integration/     → Testes de integração
 └── endpoint/        → Testes de endpoint (Supertest)
